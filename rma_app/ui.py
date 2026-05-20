@@ -5,6 +5,11 @@ from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
+try:
+    import win32com.client
+except ImportError:
+    win32com = None
+
 from rma_app.automatizacion import CoordinadorEnvioProgramado
 from rma_app.audio import ReproductorSonidos
 from rma_app.correo import CoordinadorEnviosPersonalizados, GestorEnviosPersonalizados, GestorProgramacionSemanal
@@ -333,6 +338,10 @@ class VentanaPrincipal:
         self._progreso_rmas: dict[str, dict[str, object]] = {}
         # Evitamos pintar varias veces el mismo RMA completo en el Excel.
         self._rmas_completos_marcados: set[str] = set()
+        # Rutas de archivos para envio de vaciado
+        self._ruta_archivo_vaciado: Path | None = None
+        self._ruta_pdf_vaciado: Path | None = None
+        self._folio_vaciado: str = ""
 
         # Definimos una paleta de color corporativa sobria y consistente.
         self._colores = {
@@ -788,9 +797,111 @@ class VentanaPrincipal:
         ttk.Button(
             marco_resultado,
             text="Generar vaciado",
-            command=self._generar_vaciado_rma,
+            command=self._abrir_dialogo_fecha_vaciado,
             style="Corporativo.TButton",
         ).pack(anchor="e", padx=18, pady=(0, 18))
+
+        # Panel de envio de vaciado a Cisco
+        self._panel_envio_vaciado = tk.Frame(
+            marco_resultado,
+            bg=self._colores["panel_alt"],
+            highlightbackground=self._colores["exito"],
+            highlightthickness=2,
+        )
+        self._panel_envio_vaciado.pack(fill="x", padx=18, pady=(0, 18))
+
+        tk.Label(
+            self._panel_envio_vaciado,
+            text="Envio de vaciado a Cisco",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["exito"],
+            font=("Segoe UI", 12, "bold"),
+        ).pack(anchor="w", padx=12, pady=(12, 8))
+
+        # Fila de folio y archivos
+        fila_folio = tk.Frame(self._panel_envio_vaciado, bg=self._colores["panel_alt"])
+        fila_folio.pack(fill="x", padx=12, pady=(0, 8))
+
+        tk.Label(
+            fila_folio,
+            text="Folio:",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10, "bold"),
+        ).pack(side="left")
+        self._etiqueta_folio_vaciado = tk.Label(
+            fila_folio,
+            text="Sin generar",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["texto_suave"],
+            font=("Segoe UI", 10),
+        )
+        self._etiqueta_folio_vaciado.pack(side="left", padx=(4, 16))
+
+        tk.Label(
+            fila_folio,
+            text="Excel:",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10),
+        ).pack(side="left")
+        self._etiqueta_archivo_excel = tk.Label(
+            fila_folio,
+            text="Sin generar",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["texto_suave"],
+            font=("Segoe UI", 9),
+        )
+        self._etiqueta_archivo_excel.pack(side="left", padx=(4, 16))
+
+        tk.Label(
+            fila_folio,
+            text="PDF:",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10),
+        ).pack(side="left")
+        self._boton_seleccionar_pdf = ttk.Button(
+            fila_folio,
+            text="Seleccionar PDF",
+            command=self._seleccionar_pdf_vaciado,
+            style="Secundario.TButton",
+        )
+        self._boton_seleccionar_pdf.pack(side="left", padx=(4, 0))
+
+        # Etiqueta para mostrar ruta del PDF
+        self._etiqueta_archivo_pdf = tk.Label(
+            self._panel_envio_vaciado,
+            text="",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["exito"],
+            font=("Segoe UI", 9),
+        )
+        self._etiqueta_archivo_pdf.pack(anchor="w", padx=12, pady=(0, 8))
+
+        # Campo para correo destinatario
+        fila_correo = tk.Frame(self._panel_envio_vaciado, bg=self._colores["panel_alt"])
+        fila_correo.pack(fill="x", padx=12, pady=(0, 8))
+
+        tk.Label(
+            fila_correo,
+            text="Para:",
+            bg=self._colores["panel_alt"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10),
+        ).pack(side="left")
+        self._entrada_correo_vaciado = ttk.Entry(fila_correo, width=40)
+        self._entrada_correo_vaciado.pack(side="left", padx=(8, 0))
+        self._entrada_correo_vaciado.insert(0, "ALVARADA@uninet.com.mx")
+
+        # Boton enviar
+        self._boton_enviar_vaciado = ttk.Button(
+            self._panel_envio_vaciado,
+            text="ENVIAR VACIADO A CISCO",
+            command=self._enviar_vaciado_a_cisco,
+            style="Corporativo.TButton",
+        )
+        self._boton_enviar_vaciado.pack(anchor="e", padx=12, pady=(0, 12))
 
         # Aplicamos color base inicial al resultado antes de cualquier consulta.
         self._etiqueta_estado.configure(foreground=self._colores["primario"])
@@ -1478,7 +1589,7 @@ class VentanaPrincipal:
 
         self._rmas_completos_marcados.update(rmas_nuevos)
 
-    def _generar_vaciado_rma(self) -> None:
+    def _generar_vaciado_rma(self, fecha_vaciado: datetime | None = None, folio_cisco: str = "") -> None:
         # Generamos el archivo Excel final solo con los RMA completos en la sesion.
         rmas_completos = self._obtener_rmas_completos_sesion()
         if not rmas_completos:
@@ -1493,16 +1604,168 @@ class VentanaPrincipal:
 
         try:
             ruta_archivo = self._generador_vaciado.generar_desde_rmas_completos(
-                rmas_completos
+                rmas_completos,
+                fecha_recoleccion=fecha_vaciado,
+                folio_cisco=folio_cisco,
             )
         except Exception as error:
             messagebox.showerror("No se pudo generar el vaciado", str(error))
             return
 
+        # Guardar datos para el panel de envio
+        self._folio_vaciado = folio_cisco
+        self._ruta_archivo_vaciado = ruta_archivo
+        self._ruta_pdf_vaciado = None
+
+        # Actualizar etiquetas del panel
+        self._etiqueta_folio_vaciado.configure(
+            text=f"MX{folio_cisco}",
+            fg=self._colores["exito"],
+            font=("Segoe UI", 10, "bold"),
+        )
+        self._etiqueta_archivo_excel.configure(
+            text=ruta_archivo.name,
+            fg=self._colores["exito"],
+        )
+        self._etiqueta_archivo_pdf.configure(text="PDF: Sin seleccionar", fg=self._colores["texto_suave"])
+
         messagebox.showinfo(
             "Vaciado generado",
             f"Se genero correctamente el archivo:\n{ruta_archivo}",
         )
+
+    def _abrir_dialogo_fecha_vaciado(self) -> None:
+        # Verificamos que haya RMAs completos antes de abrir el dialogo.
+        rmas_completos = self._obtener_rmas_completos_sesion()
+        if not rmas_completos:
+            messagebox.showwarning(
+                "Sin RMAs completos",
+                (
+                    "Primero debes completar al menos un RMA durante la sesion para "
+                    "poder generar el vaciado."
+                ),
+            )
+            return
+
+        # Creamos el dialogo modal.
+        dialogo = tk.Toplevel(self._raiz)
+        dialogo.title("Fecha de vaciado")
+        dialogo.resizable(False, False)
+        dialogo.transient(self._raiz)
+        dialogo.grab_set()
+        dialogo.configure(padx=20, pady=20, bg=self._colores["panel"])
+
+        # Etiqueta de titulo.
+        tk.Label(
+            dialogo,
+            text="Datos para generar vaciado",
+            bg=self._colores["panel"],
+            fg=self._colores["primario"],
+            font=("Segoe UI", 12, "bold"),
+        ).pack(pady=(0, 16))
+
+        # Campo para folio Cisco.
+        frame_folio = tk.Frame(dialogo, bg=self._colores["panel"])
+        frame_folio.pack(fill="x", pady=(0, 12))
+
+        tk.Label(
+            frame_folio,
+            text="Folio Cisco:",
+            bg=self._colores["panel"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10, "bold"),
+        ).pack(side="left", padx=(0, 8))
+
+        entrada_folio = ttk.Entry(frame_folio, width=20, font=("Segoe UI", 11))
+        entrada_folio.pack(side="left")
+        entrada_folio.focus_set()
+
+        # Frame para dia y mes.
+        frame_fecha = tk.Frame(dialogo, bg=self._colores["panel"])
+        frame_fecha.pack()
+
+        tk.Label(
+            frame_fecha,
+            text="Dia:",
+            bg=self._colores["panel"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10),
+        ).pack(side="left", padx=(0, 8))
+
+        # Selector de dia.
+        combo_dia = ttk.Combobox(
+            frame_fecha,
+            state="readonly",
+            values=[f"{i:02d}" for i in range(1, 32)],
+            width=4,
+        )
+        combo_dia.pack(side="left")
+        combo_dia.current(datetime.now().day - 1)
+
+        tk.Label(
+            frame_fecha,
+            text="  Mes:",
+            bg=self._colores["panel"],
+            fg=self._colores["texto"],
+            font=("Segoe UI", 10),
+        ).pack(side="left", padx=(16, 8))
+
+        # Selector de mes con nombres en español.
+        meses_espanol = [
+            "01 - ENERO", "02 - FEBRERO", "03 - MARZO", "04 - ABRIL",
+            "05 - MAYO", "06 - JUNIO", "07 - JULIO", "08 - AGOSTO",
+            "09 - SEPTIEMBRE", "10 - OCTUBRE", "11 - NOVIEMBRE", "12 - DICIEMBRE",
+        ]
+        combo_mes = ttk.Combobox(
+            frame_fecha,
+            state="readonly",
+            values=meses_espanol,
+            width=16,
+        )
+        combo_mes.pack(side="left")
+        combo_mes.current(datetime.now().month - 1)
+
+        # Etiqueta mostrando el año fijo.
+        tk.Label(
+            dialogo,
+            text="Año: 2026 (estatico)",
+            bg=self._colores["panel"],
+            fg=self._colores["texto_suave"],
+            font=("Segoe UI", 10),
+        ).pack(pady=(12, 16))
+
+        # Botones de accion.
+        frame_botones = tk.Frame(dialogo, bg=self._colores["panel"])
+        frame_botones.pack(pady=(0, 0))
+
+        def _confirmar():
+            folio = entrada_folio.get().strip().upper()
+            if not folio:
+                messagebox.showwarning("Folio requerido", "Ingresa el folio de Cisco.")
+                entrada_folio.focus_set()
+                return
+            dia = int(combo_dia.get())
+            mes = int(combo_mes.get()[:2])
+            fecha_seleccionada = datetime(2026, mes, dia)
+            dialogo.destroy()
+            self._generar_vaciado_rma(fecha_seleccionada, folio)
+
+        def _cancelar():
+            dialogo.destroy()
+
+        ttk.Button(
+            frame_botones,
+            text="Aceptar",
+            command=_confirmar,
+            style="Corporativo.TButton",
+        ).pack(side="left", padx=(0, 10))
+
+        ttk.Button(
+            frame_botones,
+            text="Cancelar",
+            command=_cancelar,
+            style="Secundario.TButton",
+        ).pack(side="left")
 
     
 
@@ -1735,3 +1998,66 @@ class VentanaPrincipal:
             pass
         finally:
             self._iniciar_procesamiento_automatico_personalizados()
+
+    def _seleccionar_pdf_vaciado(self) -> None:
+        archivo = filedialog.askopenfilename(
+            title="Seleccionar PDF del vaciado",
+            filetypes=[("Archivos PDF", "*.pdf")],
+        )
+        if not archivo:
+            return
+        self._ruta_pdf_vaciado = Path(archivo)
+        self._etiqueta_archivo_pdf.configure(
+            text=f"PDF: {self._ruta_pdf_vaciado.name}",
+            fg=self._colores["exito"],
+        )
+
+    def _enviar_vaciado_a_cisco(self) -> None:
+        if not self._folio_vaciado:
+            messagebox.showwarning("Sin folio", "Primero genera el vaciado.")
+            return
+        if not self._ruta_archivo_vaciado or not self._ruta_archivo_vaciado.exists():
+            messagebox.showerror("Sin archivo", "No se encontro el archivo Excel.")
+            return
+        if not self._ruta_pdf_vaciado or not self._ruta_pdf_vaciado.exists():
+            messagebox.showerror("Sin PDF", "Selecciona el archivo PDF primero.")
+            return
+
+        destinatario = self._entrada_correo_vaciado.get().strip()
+        if not destinatario:
+            messagebox.showwarning("Sin destinatario", "Ingresa el correo del destinatario.")
+            return
+
+        try:
+            self._enviar_correo_vaciado_cisco(
+                folio=self._folio_vaciado,
+                destinatario=destinatario,
+                ruta_excel=str(self._ruta_archivo_vaciado),
+                ruta_pdf=str(self._ruta_pdf_vaciado),
+            )
+            messagebox.showinfo("Correo enviado", "El vaciado se envio correctamente.")
+        except Exception as error:
+            messagebox.showerror("Error al enviar", str(error))
+
+    def _enviar_correo_vaciado_cisco(
+        self,
+        folio: str,
+        destinatario: str,
+        ruta_excel: str,
+        ruta_pdf: str,
+    ) -> None:
+        if win32com is None:
+            raise RuntimeError("No se encontro win32com. Instala pywin32.")
+
+        outlook = win32com.client.Dispatch("Outlook.Application")
+        correo = outlook.CreateItem(0)
+        correo.To = destinatario
+        correo.Subject = f"EVIDENCIAS DE VACEADO MX{folio} FORMATO EXCEL"
+        correo.Body = (
+            f"ADJUNTO EVIDENCIA DE VACEADO CON EL FOLIO MX{folio}\n\n"
+            "ALFREDO CRUZ\n"
+            "ALMACEN TELEDINAMICA"
+        )
+        correo.Attachments.Add(ruta_excel)
+        correo.Attachments.Add(ruta_pdf)
+        correo.Display()

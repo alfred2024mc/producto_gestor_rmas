@@ -478,6 +478,7 @@ class GeneradorVaciadoRma:
         self,
         rmas_completos: list[str],
         fecha_recoleccion: datetime | None = None,
+        folio_cisco: str = "",
     ) -> Path:
         marco_datos = self._servicio_busqueda.marco_datos
         if marco_datos is None or marco_datos.empty:
@@ -486,16 +487,16 @@ class GeneradorVaciadoRma:
         if not rmas_completos:
             raise ValueError("No hay RMAs completos en la sesion para generar el vaciado.")
 
-        filas_vaciado = self._construir_filas_vaciado(marco_datos, rmas_completos, fecha_recoleccion)
+        filas_vaciado = self._construir_filas_vaciado(marco_datos, rmas_completos, fecha_recoleccion, folio_cisco)
         if not filas_vaciado:
             raise RuntimeError("No se pudo construir ninguna fila valida para el vaciado.")
 
-        ruta_salida = self._construir_ruta_salida()
+        ruta_salida = self._construir_ruta_salida(folio_cisco)
         libro = Workbook()
         hoja = libro.active
         hoja.title = "Pre alerta"
 
-        self._poblar_hoja(hoja, filas_vaciado)
+        self._poblar_hoja(hoja, filas_vaciado, folio_cisco)
         libro.save(ruta_salida)
         return ruta_salida
 
@@ -504,17 +505,19 @@ class GeneradorVaciadoRma:
         marco_datos: pd.DataFrame,
         rmas_completos: list[str],
         fecha_recoleccion: datetime | None = None,
+        folio_cisco: str = "",
     ) -> list[dict[str, str]]:
         filas_vaciado: list[dict[str, str]] = []
         datos_rma = marco_datos[marco_datos[self._configuracion.columna_rma].isin(rmas_completos)]
         if datos_rma.empty:
             return []
 
-        # Si el usuario proporcionó fecha de recolección, la usamos directamente
+        # Si el usuario proporcionó fecha manual, la usamos para todos los grupos
         if fecha_recoleccion is not None:
+            # Usar la fecha seleccionada por el usuario para TODOS los RMAs
             fecha_entrega = fecha_recoleccion
         else:
-            # Tomar fecha del SHIP DATE solo si no se proporcionó fecha manual
+            # Tomar fecha del SHIP DATE del primer grupo
             primera_fila = datos_rma.iloc[0]
             fecha_entrega = parsear_fecha_texto(primera_fila.get("SHIP DATE"))
             if fecha_entrega is None:
@@ -524,13 +527,12 @@ class GeneradorVaciadoRma:
         for _indice, grupo in grupos:
             fila_base = grupo.iloc[0]
 
-            # Calcular el nombre del mes basándose en la fecha de entrega (puede ser fecha manual o del SHIP DATE)
-            mes_entrega = fecha_entrega
-            if fecha_recoleccion is None:
-                # Solo usar SHIP DATE por grupo si no hay fecha manual
-                fecha_grupo = parsear_fecha_texto(fila_base.get("SHIP DATE"))
-                if fecha_grupo is not None:
-                    mes_entrega = fecha_grupo
+            # Si hay fecha manual, la usamos para todos los grupos
+            # Si NO hay fecha manual, intentamos usar SHIP DATE por grupo
+            if fecha_recoleccion is not None:
+                mes_entrega = fecha_recoleccion
+            else:
+                mes_entrega = fecha_entrega
 
             series_retorno = [
                 str(valor).strip().upper()
@@ -542,10 +544,10 @@ class GeneradorVaciadoRma:
                 series_instaladas.append("")
 
             multivendor = str(fila_base.get("MV  Y/O RESPONSABLE", "TELEDINAMICA")).strip() or "TELEDINAMICA"
-            acuse = (
-                f"ACUSE CISCO {multivendor} "
-                f"{mes_entrega.strftime('%d')} {nombre_mes_espanol(mes_entrega)} {mes_entrega.strftime('%Y')}"
-            )
+            # Construir acuse con formato "20 MAYO 2026" (sin folio, solo fecha)
+            dia_formato = mes_entrega.strftime('%d')
+            mes_formato = nombre_mes_espanol(mes_entrega)
+            acuse = f"ACUSE CISCO {multivendor} {dia_formato} {mes_formato} {mes_entrega.strftime('%Y')}"
             parte = str(fila_base.get("PART NUMBER", "")).strip()
             rma = str(fila_base.get("RMA", "")).strip()
             tarea = str(fila_base.get("CUSTOMER REFERENCE #", "")).strip()
@@ -573,14 +575,19 @@ class GeneradorVaciadoRma:
 
         return filas_vaciado
 
-    def _construir_ruta_salida(self) -> Path:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    def _construir_ruta_salida(self, folio_cisco: str = "") -> Path:
         carpeta_destino = self._servicio_busqueda.configuracion.ruta_excel.parent
-        return carpeta_destino / f"VACIADO_RMA_{timestamp}.xlsx"
+        if folio_cisco:
+            return carpeta_destino / f"ACUSE CISCO TELEDINAMICA {folio_cisco}.xlsx"
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            return carpeta_destino / f"VACIADO_RMA_{timestamp}.xlsx"
 
-    def _poblar_hoja(self, hoja, filas_vaciado: list[dict[str, str]]) -> None:
+    def _poblar_hoja(self, hoja, filas_vaciado: list[dict[str, str]], folio_cisco: str = "") -> None:
         relleno_encabezado = PatternFill(fill_type="solid", fgColor="0B2E59")
         fuente_encabezado = Font(color="FFFF00", bold=True)
+        relleno_folio = PatternFill(fill_type="solid", fgColor="217346")  # Verde Microsoft
+        fuente_folio = Font(color="FFFFFF", bold=True, size=16)
         borde = Border(
             left=Side(style="thin", color="000000"),
             right=Side(style="thin", color="000000"),
@@ -621,7 +628,7 @@ class GeneradorVaciadoRma:
         for indice, ancho in anchos.items():
             hoja.column_dimensions[get_column_letter(indice)].width = ancho
 
-        fila_firmas = len(filas_vaciado) + 5
+        fila_firmas = len(filas_vaciado) + 4
         hoja.merge_cells(start_row=fila_firmas, start_column=4, end_row=fila_firmas, end_column=6)
         hoja.merge_cells(start_row=fila_firmas + 1, start_column=4, end_row=fila_firmas + 1, end_column=6)
         hoja.merge_cells(start_row=fila_firmas, start_column=10, end_row=fila_firmas, end_column=12)
@@ -630,8 +637,19 @@ class GeneradorVaciadoRma:
         hoja.cell(row=fila_firmas, column=4, value="PERSONAL QUE ENTREGA").alignment = alineacion
         hoja.cell(row=fila_firmas + 1, column=4, value="ALFREDO CRUZ").alignment = alineacion
         hoja.cell(row=fila_firmas, column=10, value="PERSONAL QUE RECIBE").alignment = alineacion
-        hoja.cell(row=fila_firmas + 1, column=10, value="ALFREDO CRUZ").alignment = alineacion
+        hoja.cell(row=fila_firmas + 1, column=10, value="NOMBRE FECHA Y FIRMA").alignment = alineacion
 
         for fila in range(fila_firmas, fila_firmas + 2):
             for columna in (4, 5, 6, 10, 11, 12):
                 hoja.cell(row=fila, column=columna).border = Border(bottom=Side(style="thin", color="000000"))
+
+        # Fila del folio Cisco en verde DESPUES de las firmas
+        if folio_cisco:
+            hoja.merge_cells(start_row=fila_firmas + 4, start_column=1, end_row=fila_firmas + 4, end_column=14)
+            celda_folio = hoja.cell(row=fila_firmas + 4, column=1, value=f"FOLIO: {folio_cisco}")
+            celda_folio.fill = relleno_folio
+            celda_folio.font = fuente_folio
+            celda_folio.alignment = Alignment(horizontal="center", vertical="center")
+            celda_folio.border = borde
+            # Aumentar altura de la fila del folio
+            hoja.row_dimensions[fila_firmas + 4].height = 35
