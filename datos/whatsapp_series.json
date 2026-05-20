@@ -1,0 +1,16 @@
+[
+    {
+      "codigo": "SER001",
+      "nombre": "Nombre de tu serie",
+      "genero": "Drama",
+      "modelos": ["CP-7821"],
+      "estado": "disponible"
+    },
+    {
+      "codigo": "SER002",
+      "nombre": "Otra serie",
+      "genero": "Comedia",
+      "modelos": ["CP-8841"],
+      "estado": "disponible"
+    }
+  ]
