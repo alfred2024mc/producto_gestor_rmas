@@ -1,4 +1,0 @@
-2026/05/10-13:42:33.448 74a4 Creating DB C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\whatsapp_profile\Default\shared_proto_db\metadata since it was missing.
-2026/05/10-13:42:33.463 74a4 Reusing MANIFEST C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\whatsapp_profile\Default\shared_proto_db\metadata/MANIFEST-000001
-2026/05/10-13:42:33.466 74a4 Recovering log #3
-2026/05/10-13:42:33.469 74a4 Reusing old log C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\whatsapp_profile\Default\shared_proto_db\metadata/000003.log 
