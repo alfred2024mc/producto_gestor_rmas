@@ -1,0 +1,44 @@
+[25940:33704:0509/220225.867:ERROR:components\content_settings\core\browser\content_settings_pref.cc:326] Invalid pattern strings: chrome://newtab/,*
+[25940:33704:0509/220225.924:WARNING:chrome\browser\extensions\activity_log\activity_log_policy.cc:71] Scheduling init
+[25940:33704:0509/220225.924:WARNING:chrome\browser\extensions\activity_log\activity_log_policy.cc:71] Scheduling init
+[13764:33092:0509/220226.190:ERROR:ui\gl\direct_composition_support.cc:617] AMD VideoProcessorGetOutputExtension failed: Error no especificado (0x80004005)
+[13764:33092:0509/220226.194:VERBOSE1:components\viz\service\main\viz_main_impl.cc:87] VizNullHypothesis is disabled (not a warning)
+[14236:15788:0509/220226.313:INFO:third_party\webrtc\rtc_base\cpu_info.cc:77] Available number of cores: 12
+[13892:396:0509/220226.403:INFO:third_party\webrtc\rtc_base\cpu_info.cc:77] Available number of cores: 12
+[25940:33704:0509/220227.417:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[28628:16948:0509/220227.515:INFO:third_party\webrtc\rtc_base\cpu_info.cc:77] Available number of cores: 12
+[17284:20248:0509/220227.527:INFO:third_party\webrtc\rtc_base\cpu_info.cc:77] Available number of cores: 12
+[25940:33704:0509/220227.898:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220227.947:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220228.009:INFO:CONSOLE:232] "Event handler of 'x-storagemutated-1' event must be added on the initial evaluation of worker script.", source: https://static.whatsapp.net/rsrc.php/v4/y2/r/NgZj-Qqv2xV.js (232)
+[25940:33704:0509/220228.272:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[18132:14156:0509/220228.366:INFO:third_party\webrtc\rtc_base\cpu_info.cc:77] Available number of cores: 12
+[25940:33704:0509/220228.437:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220228.743:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220228.781:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220228.859:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220229.468:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220230.712:INFO:CONSOLE:63] "The PerformanceObserver does not support buffered flag with the entryTypes argument.", source: https://static.whatsapp.net/rsrc.php/v4/yB/r/eLMh-li6mu_ktpndlYXADdldZ17Mi43IFRmezoi1NCGyKe0cKNhENBqa_zHNlDMhh_i4LayP_ogKiDLW_Uqry6zXRgac4W9JUNXe0qnL2dG90HD3sMMaP-mao.js (63)
+[25940:33704:0509/220235.352:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220235.357:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220235.366:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220236.239:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220239.096:WARNING:chrome\browser\edge_pinned_sites\pinned_sites_cache.cc:237] Cache isn't initialized
+[25940:33704:0509/220326.453:WARNING:chrome\browser\edge_underside\underside_helper.cc:1157] If test does not need FrontLoad, this may be expected. SetFrontLoadDecision: 3
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:27.710954 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101255 UTC
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:27.910927 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101255 UTC
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:27.949545 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101255 UTC
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:28.762215 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101255 UTC
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:28.783509 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101255 UTC
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:29.470601 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101255 UTC
+[25940:33704:0509/220326.455:WARNING:chrome\browser\ui\edge_window_tab_manager\api\wtm_image_web_contents_helper.cc:890] Favicon request has been preempted. Skipping.  old request_start_time=2026-05-10 04:02:36.240020 UTC, pending_favicon_request_start_time_=2026-05-10 04:02:39.101254 UTC
+[25940:33704:0509/220338.663:INFO:CONSOLE:232] "Event handler of 'x-storagemutated-1' event must be added on the initial evaluation of worker script.", source: https://static.whatsapp.net/rsrc.php/v4/y2/r/NgZj-Qqv2xV.js (232)
+[28348:19804:0509/220426.790:VERBOSE1:components\viz\service\main\viz_main_impl.cc:87] VizNullHypothesis is disabled (not a warning)
+[25940:33704:0509/220906.789:INFO:CONSOLE:0] "Access to fetch at 'https://dit.whatsapp.net/deidentified_telemetry' from origin 'https://web.whatsapp.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.", source: https://web.whatsapp.com/ (0)
+[25940:33704:0509/220907.374:INFO:CONSOLE:0] "Access to fetch at 'https://dit.whatsapp.net/deidentified_telemetry' from origin 'https://web.whatsapp.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.", source: https://web.whatsapp.com/ (0)
+[25940:33704:0509/220909.115:INFO:CONSOLE:0] "Access to fetch at 'https://dit.whatsapp.net/deidentified_telemetry' from origin 'https://web.whatsapp.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.", source: https://web.whatsapp.com/ (0)
+[25940:33704:0509/220913.200:INFO:CONSOLE:0] "Access to fetch at 'https://dit.whatsapp.net/deidentified_telemetry' from origin 'https://web.whatsapp.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.", source: https://web.whatsapp.com/ (0)
+[25940:33704:0509/222441.275:ERROR:components\device_event_log\device_event_log_impl.cc:248] [22:24:41.273] USB: usb_service_win.cc:108 SetupDiGetDeviceProperty({{A45C254E-DF1C-4EFD-8020-67D146A850E0}, 6}) failed: No se ha encontrado el elemento. (0x490)
+[25940:33704:0509/223328.642:WARNING:chrome\browser\performance_manager\policies\page_discarding_helper.cc:170] Discarding multiple pages with target (kb): 0, discard_protected_tabs: 0
+[25940:33704:0509/230311.895:WARNING:chrome\browser\performance_manager\policies\page_discarding_helper.cc:170] Discarding multiple pages with target (kb): 0, discard_protected_tabs: 0
+[22080:7444:0509/230627.996:INFO:third_party\webrtc\rtc_base\cpu_info.cc:77] Available number of cores: 12

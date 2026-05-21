@@ -1,0 +1,39 @@
+2026/05/16-14:19:53.852 17a8 Reusing MANIFEST C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\chrome_perfil\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/05/16-14:19:53.854 17a8 Recovering log #576
+2026/05/16-14:19:53.922 17a8 Reusing old log C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\chrome_perfil\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000576.log 
+2026/05/16-14:20:10.231 6b68 Compacting 1@1 + 1@2 files
+2026/05/16-14:20:11.257 6b68 Generated table #583@1: 84198 keys, 2238991 bytes
+2026/05/16-14:20:11.257 6b68 Compacted 1@1 + 1@2 files => 2238991 bytes
+2026/05/16-14:20:11.295 6b68 compacted to: files[ 0 0 24 0 0 0 0 ]
+2026/05/16-14:20:11.296 6b68 Delete type=2 #572
+2026/05/16-14:20:11.297 6b68 Delete type=2 #578
+2026/05/16-14:20:43.867 2f24 Level-0 table #585: started
+2026/05/16-14:20:43.949 2f24 Level-0 table #585: 1155040 bytes OK
+2026/05/16-14:20:43.953 2f24 Delete type=0 #576
+2026/05/16-14:20:44.924 2f24 Compacting 1@0 + 0@1 files
+2026/05/16-14:20:44.993 2f24 Generated table #586@0: 20975 keys, 262256 bytes
+2026/05/16-14:20:45.057 2f24 Generated table #587@0: 13642 keys, 402349 bytes
+2026/05/16-14:20:45.057 2f24 Compacted 1@0 + 0@1 files => 664605 bytes
+2026/05/16-14:20:45.060 2f24 compacted to: files[ 0 2 24 0 0 0 0 ]
+2026/05/16-14:20:45.061 2f24 Delete type=2 #585
+2026/05/16-14:20:46.054 4124 Compacting 1@1 + 9@2 files
+2026/05/16-14:20:46.306 4124 Generated table #588@1: 15174 keys, 2172691 bytes
+2026/05/16-14:20:46.604 4124 Generated table #589@1: 35848 keys, 2246727 bytes
+2026/05/16-14:20:46.903 4124 Generated table #590@1: 26591 keys, 2273339 bytes
+2026/05/16-14:20:47.206 4124 Generated table #591@1: 28615 keys, 2264718 bytes
+2026/05/16-14:20:47.653 4124 Generated table #592@1: 27763 keys, 2263716 bytes
+2026/05/16-14:20:48.205 4124 Generated table #593@1: 19569 keys, 2253863 bytes
+2026/05/16-14:20:48.831 4124 Generated table #594@1: 64942 keys, 2211276 bytes
+2026/05/16-14:20:49.303 4124 Generated table #595@1: 36298 keys, 895727 bytes
+2026/05/16-14:20:49.303 4124 Compacted 1@1 + 9@2 files => 16582057 bytes
+2026/05/16-14:20:49.335 4124 compacted to: files[ 0 1 23 0 0 0 0 ]
+2026/05/16-14:20:49.337 4124 Delete type=2 #564
+2026/05/16-14:20:49.337 4124 Delete type=2 #565
+2026/05/16-14:20:49.337 4124 Delete type=2 #566
+2026/05/16-14:20:49.337 4124 Delete type=2 #567
+2026/05/16-14:20:49.337 4124 Delete type=2 #568
+2026/05/16-14:20:49.338 4124 Delete type=2 #569
+2026/05/16-14:20:49.338 4124 Delete type=2 #571
+2026/05/16-14:20:49.338 4124 Delete type=2 #580
+2026/05/16-14:20:49.338 4124 Delete type=2 #581
+2026/05/16-14:20:49.338 4124 Delete type=2 #587

@@ -1,0 +1,5 @@
+2026/05/10-13:42:33.160 8a18 Creating DB C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\whatsapp_profile\Default\Local Storage\leveldb since it was missing.
+2026/05/10-13:42:33.218 8a18 Reusing MANIFEST C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\whatsapp_profile\Default\Local Storage\leveldb/MANIFEST-000001
+2026/05/10-13:42:33.225 8a18 Recovering log #4
+2026/05/10-13:42:33.245 8a18 Reusing old log C:\Users\alfmo\OneDrive\Escritorio\SWITCH\datos\whatsapp_profile\Default\Local Storage\leveldb/000004.log 
+2026/05/10-13:42:33.248 8a18 Delete type=2 #5
